@@ -1,0 +1,42 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "title": "World's Daily Life Expenditure in 2017",
+    "width": 800,
+    "height": 400,
+    "projection": {"type": "equalEarth"},
+    "data": {
+      "url": "ne_110m.json",
+      "format": {"type": "topojson", "feature": "ne_110m_admin_0_countries"}
+    },
+    "transform": [
+      {
+        "lookup": "properties.NAME",
+        "from": {
+          "data": {
+            "url": "daily_life_expenditure.csv"
+          },
+          "key": "Country",
+          "fields": ["GDP","DailyLifeExpenditure"]
+        }
+      },
+      {"calculate": "datum.DailyLifeExpenditure/datum.GDP * 1000", "as": "Average Daily Expenditure over GDP"}
+    ],
+    "mark": {"type": "geoshape"},
+    "encoding": {
+    "color": {
+        "field": "Average Daily Expenditure over GDP",
+        "title":"Daily Expenditure over GDP",
+        "type": "quantitative",
+        "scale": {
+            "type": "threshold",
+            "domain": [25, 75, 125],
+            "range": ["#fdbe85", "#fd8d3c", "#e6550d", "#a63603"]
+        }
+        },
+      "tooltip": [
+        {"field": "properties.NAME", "type": "nominal", "title": "Country"},
+        {"field": "DailyLifeExpenditure", "type": "quantitative", "title": "Daily Life Expenditure (USD)"},
+        {"field": "Average Daily Expenditure over GDP", "type": "quantitative", "title": "Average Daily Expenditure over GDP (USD)"}
+      ]
+    }
+  }
